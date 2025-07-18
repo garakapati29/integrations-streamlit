@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SiteRecon Aspire Integration Setup</title>
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background: #f8fafc;
+    color: #334155;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 20px;
+    box-sizing: border-box;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.header h1 {
+    color: #1e293b;
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.header p {
+    color: #64748b;
+    font-size: 16px;
+}
+
+.tabs {
+    display: flex;
+    background: white;
+    border-radius: 12px;
+    padding: 8px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.tab {
+    flex: 1;
+    padding: 12px 24px;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s;
+    color: #64748b;
+}
+
+.tab.active {
+    background: #FFD02A;
+    color: #1e293b;
+    font-weight: 600;
+}
+
+.tab:hover:not(.active) {
+    background: #f1f5f9;
+}
+
+.tab-content {
+    display: none;
+    background: white;
+    border-radius: 12px;
+    padding: 32px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    flex: 1;
+    overflow-y: auto;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #374151;
+}
+
+.form-group input, .form-group select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+}
+
+.form-group input:focus, .form-group select:focus {
+    outline: none;
+    border-color: #3b82f6;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .container {
+        padding: 10px;
+    }
+    
+    .tab-content {
+        padding: 20px;
+    }
+    
+    .formula-modal-content {
+        width: 95%;
+        padding: 20px;
+    }
+    
+    .tabs {
+        flex-direction: column;
+        gap: 4px;
+    }
+    
+    .tab {
+        padding: 10px 16px;
+    }
+}
+
+.btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-primary {
+    background: #FFD02A;
+    color: #1e293b;
+    font-weight: 600;
+}
+
+.btn-primary:hover {
+    background: #ffc107;
+}
+
+.btn-secondary {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.btn-secondary:hover {
+    background: #e2e8f0;
+}
+
+.btn-danger {
+    background: #ef4444;
+    color: white;
+}
+
+.btn-danger:hover {
+    background: #dc2626;
+}
+
+.loading {
+    display: none;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: #fef3c7;
+    border: 1px solid #f59e0b;
+    border-radius: 8px;
+    color: #92400e;
+    margin-top: 16px;
+}
+
+.loading.show {
+    display: flex;
+}
+
+.spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #f59e0b;
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.error {
+    background: #fee2e2;
+    border: 1px solid #fca5a5;
+    color: #991b1b;
+    padding: 16px;
+    border-radius: 8px;
+    margin-top: 16px;
+    display: none;
+}
+
+.error.show {
+    display: block;
+}
+
+.success {
+    background: #dcfce7;
+    border: 1px solid #86efac;
+    color: #166534;
+    padding: 16px;
+    border-radius: 8px;
+    margin-top: 16px;
+    display: none;
+}
+
+.success.show {
+    display: block;
+}
+
+.mapping-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 24px;
+    overflow-x: auto;
+    display: block;
+    white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+    .mapping-table {
+        font-size: 14px;
+    }
+    
+    .mapping-table th,
+    .mapping-table td {
+        padding: 8px;
+    }
+}
+
+.mapping-table th,
+.mapping-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.mapping-table th {
+    background: #f8fafc;
+    font-weight: 600;
+    color: #374151;
+}
+
+.mapping-row select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+}
+
+.mapping-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-small {
+    padding: 6px 12px;
+    font-size: 12px;
+}
+
+.add-mapping {
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.add-mapping .btn:last-child {
+    margin-left: auto;
+}
+
+@media (max-width: 768px) {
+    .add-mapping {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .add-mapping .btn:last-child {
+        margin-left: 0;
+        margin-top: 8px;
+    }
+}
+
+.formula-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.formula-modal.show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.formula-modal-content {
+    background: white;
+    border-radius: 16px;
+    padding: 32px;
+    max-width: 700px;
+    width: 90%;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.modal-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 8px;
+}
+
+.modal-subtitle {
+    color: #64748b;
+    font-size: 14px;
+    margin-bottom: 32px;
+}
+
+.aspire-target {
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 24px;
+}
+
+.aspire-target label {
+    display: block;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 8px;
+}
+
+.aspire-target select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    background: white;
+}
+
+.formula-section {
+    background: #fafbfc;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 24px;
+}
+
+.formula-section-title {
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 16px;
+    font-size: 14px;
+}
+
+.formula-row {
+    display: grid;
+    grid-template-columns: 1fr auto 80px 80px;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 8px;
+    padding: 16px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.operator-between {
+    display: flex;
+    justify-content: center;
+    margin: 8px 0;
+    padding: 8px;
+}
+
+.operator-between select {
+    padding: 8px 16px;
+    border: 2px solid #3b82f6;
+    border-radius: 8px;
+    background: #f0f9ff;
+    font-size: 14px;
+    color: #1e40af;
+    font-weight: 500;
+}
+
+.formula-row:last-child {
+    margin-bottom: 0;
+}
+
+.formula-row select,
+.formula-row input {
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+.formula-row input[type="number"] {
+    text-align: center;
+}
+
+.operator-row {
+    display: flex;
+    justify-content: center;
+    margin: 8px 0;
+}
+
+.operator-select {
+    padding: 6px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: white;
+    font-size: 13px;
+    color: #374151;
+}
+
+.remove-row-btn {
+    background: #fee2e2;
+    color: #dc2626;
+    border: none;
+    border-radius: 6px;
+    padding: 8px;
+    cursor: pointer;
+    font-size: 12px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.remove-row-btn:hover {
+    background: #fecaca;
+}
+
+.add-row-btn {
+    background: #f1f5f9;
+    color: #475569;
+    border: 2px dashed #cbd5e1;
+    border-radius: 8px;
+    padding: 12px;
+    cursor: pointer;
+    font-size: 14px;
+    width: 100%;
+    transition: all 0.2s;
+}
+
+.add-row-btn:hover {
+    background: #e2e8f0;
+    border-color: #94a3b8;
+}
+
+.formula-preview {
+    background: #ecfdf5;
+    border: 1px solid #86efac;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+}
+
+.formula-preview-title {
+    font-weight: 500;
+    color: #166534;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.formula-preview-text {
+    color: #166534;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    padding-top: 20px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.toggle-switch {
+    position: relative;
+    width: 60px;
+    height: 34px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #FFD02A;
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+.export-settings {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px;
+    background: #f8fafc;
+    border-radius: 12px;
+    margin-bottom: 24px;
+}
+
+.export-info {
+    flex: 1;
+}
+
+.export-info h3 {
+    margin-bottom: 8px;
+    color: #1e293b;
+}
+
+.export-info p {
+    color: #64748b;
+    font-size: 14px;
+}
+
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.status-connected {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status-disconnected {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    color: #64748b;
+    font-size: 14px;
+}
+
+.breadcrumb-arrow {
+    color: #cbd5e1;
+}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header">
+    <div class="breadcrumb">
+        <span>CRM Integration</span>
+        <span class="breadcrumb-arrow">›</span>
+        <span>Aspire Setup</span>
+    </div>
+    <h1>Aspire CRM Integration</h1>
+    <p>Connect your Aspire CRM account to automatically export takeoff measurements from SiteRecon</p>
+</div>
+
+<div class="tabs">
+    <button class="tab active" onclick="showTab('credentials')">Credentials</button>
+    <button class="tab" onclick="showTab('mapping')">Mapping</button>
+    <button class="tab" onclick="showTab('export-settings')">Export Settings</button>
+</div>
+
+<!-- Credentials Tab -->
+<div id="credentials" class="tab-content active">
+    <h2 style="margin-bottom: 24px; color: #1e293b;">Aspire CRM Credentials</h2>
+    
+    <form id="credentialsForm">
+        <div class="form-row">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" placeholder="your@email.com" required>
+            </div>
+            <div class="form-group">
+                <label for="companyCode">Company Code</label>
+                <input type="text" id="companyCode" name="companyCode" placeholder="ABC123" required>
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Your password" required>
+            </div>
+            <div class="form-group">
+                <label for="deviceName">Device Name</label>
+                <input type="text" id="deviceName" name="deviceName" placeholder="SiteRecon Integration" required>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="propertyId">Demo Aspire Property ID</label>
+            <input type="text" id="propertyId" name="propertyId" placeholder="Enter property ID to test connection" required>
+            <small style="color: #64748b; font-size: 12px; margin-top: 4px; display: block;">
+                This will be used to fetch your takeoff items for mapping configuration
+            </small>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">
+            <span>Test Connection</span>
+        </button>
+        
+        <button type="button" class="btn btn-primary" onclick="saveAndContinue()" style="margin-left: 16px;">
+            <span>Save & Continue</span>
+        </button>
+    </form>
+
+    <div id="loading" class="loading">
+        <div class="spinner"></div>
+        <span>Connecting to Aspire and fetching your takeoff items. This may take up to 2 minutes...</span>
+    </div>
+
+    <div id="error" class="error">
+        <strong>Connection Failed</strong><br>
+        Failed to fetch takeoff items. Please check your credentials or Aspire Property ID.
+        <br><br>
+        <button class="btn btn-secondary btn-small" onclick="retryConnection()">Retry</button>
+    </div>
+
+    <div id="success" class="success">
+        <strong>Connection Successful!</strong><br>
+        Successfully connected to Aspire CRM and fetched takeoff items. You can now proceed to mapping configuration.
+        <br><br>
+        <button class="btn btn-primary" onclick="showTab('mapping')">Configure Mapping</button>
+    </div>
+</div>
+
+<!-- Mapping Tab -->
+<div id="mapping" class="tab-content">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <h2 style="color: #1e293b;">Takeoff Item Mapping</h2>
+        <span class="status-badge status-connected">Connected to Aspire</span>
+    </div>
+    
+    <p style="margin-bottom: 24px; color: #64748b;">
+        Map your SiteRecon takeoff items to corresponding Aspire CRM items. You can create simple 1:1 mappings or custom formulas.
+    </p>
+
+    <table class="mapping-table">
+        <thead>
+            <tr>
+                <th>SiteRecon Takeoff Item</th>
+                <th>Aspire Takeoff Item</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="mappingTableBody">
+            <tr class="mapping-row">
+                <td>
+                    <select>
+                        <option value="">Select SiteRecon item...</option>
+                        <option value="turf">Turf</option>
+                        <option value="mulch_beds">Mulch Beds</option>
+                        <option value="soft_edge">Soft Edge</option>
+                        <option value="hard_edge">Hard Edge</option>
+                        <option value="36_inch_mower">36-inch mower</option>
+                        <option value="48_inch_mower">48-inch mower</option>
+                        <option value="60_inch_mower">60-inch mower</option>
+                        <option value="palm_tree">Palm Tree</option>
+                    </select>
+                </td>
+                <td>
+                    <select>
+                        <option value="">Select Aspire item...</option>
+                        <option value="turf_areas_spot_treat">Turf Areas - Spot Treat</option>
+                        <option value="treatable_shrub_beds">Treatable Shrub Beds</option>
+                        <option value="36_inch_mower">36-inch Mower</option>
+                        <option value="48_inch_mower">48-inch Mower</option>
+                        <option value="60_inch_mower">60-inch Mower</option>
+                    </select>
+                </td>
+                <td>
+                    <div class="mapping-actions">
+                        <button class="btn btn-danger btn-small" onclick="removeMapping(this)">Remove</button>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="add-mapping">
+        <button class="btn btn-primary" onclick="addMapping()">Add Mapping</button>
+        <button class="btn btn-secondary" onclick="openFormulaModal()" style="margin-left: 16px;">Add Formula Mapping</button>
+        <button class="btn btn-primary" onclick="saveMapping()" style="margin-left: auto; display: block; margin-top: 16px;">Save Mapping</button>
+    </div>
+
+    <div id="mappingSuccess" class="success">
+        <strong>Mapping Saved!</strong><br>
+        Your takeoff item mappings have been successfully saved.
+    </div>
+</div>
+
+<!-- Export Settings Tab -->
+<div id="export-settings" class="tab-content">
+    <h2 style="margin-bottom: 24px; color: #1e293b;">Export Settings</h2>
+    
+    <div class="export-settings">
+        <div class="export-info">
+            <h3>Automatic Export</h3>
+            <p>Automatically export takeoff measurements to Aspire CRM when SiteRecon orders are marked as delivered</p>
+        </div>
+        <label class="toggle-switch">
+            <input type="checkbox" id="autoExport">
+            <span class="slider"></span>
+        </label>
+    </div>
+
+    <button class="btn btn-primary" onclick="saveExportSettings()">Save Export Settings</button>
+</div>
+</div>
+
+<!-- Formula Modal -->
+<div id="formulaModal" class="formula-modal">
+<div class="formula-modal-content">
+    <h3 class="modal-title">Create Custom Mapping</h3>
+    <p class="modal-subtitle">Define a custom formula to map multiple SiteRecon items to a single Aspire CRM item</p>
+    
+    <!-- Formula Section -->
+    <div class="formula-section">
+        <div class="formula-section-title">Formula Builder</div>
+        
+        <div id="formulaRows">
+            <div class="formula-row">
+                <select class="siterecon-select">
+                    <option value="">Select SiteRecon item...</option>
+                    <option value="turf">Turf</option>
+                    <option value="mulch_beds">Mulch Beds</option>
+                    <option value="soft_edge">Soft Edge</option>
+                    <option value="hard_edge">Hard Edge</option>
+                    <option value="36_inch_mower">36-inch mower</option>
+                    <option value="48_inch_mower">48-inch mower</option>
+                    <option value="60_inch_mower">60-inch mower</option>
+                    <option value="palm_tree">Palm Tree</option>
+                </select>
+                <select class="multiplier-unit">
+                    <option value="+">+</option>
+                    <option value="-">−</option>
+                    <option value="*">×</option>
+                    <option value="/">/</option>
+                    <option value="percent">%</option>
+                </select>
+                <input type="number" class="numeric-value" placeholder="10" min="0" step="0.1">
+                <button type="button" class="remove-row-btn" onclick="removeFormulaRow(this)" title="Remove row">×</button>
+            </div>
+        </div>
+
+        <button type="button" class="add-row-btn" onclick="addFormulaRow()">
+            + Add Another Input
+        </button>
+    </div>
+
+    <!-- Aspire Target Selection -->
+    <div class="aspire-target">
+        <label for="aspireTargetSelect">Aspire CRM Takeoff Item</label>
+        <select id="aspireTargetSelect">
+            <option value="">Select Aspire target item...</option>
+            <option value="turf_areas_spot_treat">Turf Areas - Spot Treat</option>
+            <option value="treatable_shrub_beds">Treatable Shrub Beds</option>
+            <option value="36_inch_mower">36-inch Mower</option>
+            <option value="48_inch_mower">48-inch Mower</option>
+            <option value="60_inch_mower">60-inch Mower</option>
+        </select>
+    </div>
+
+    <!-- Live Preview -->
+    <div class="formula-preview">
+        <div class="formula-preview-title">Live Preview</div>
+        <div class="formula-preview-text" id="formulaPreviewText">
+            Select items and values to see the formula preview
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeFormulaModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveFormula()">Save Mapping</button>
+    </div>
+</div>
+</div>
+
+<script>
+let currentMappingRow = null;
+
+function showTab(tabName) {
+    // Hide all tab contents
+    const tabContents = document.querySelectorAll('.tab-content');
+    tabContents.forEach(content => content.classList.remove('active'));
+    
+    // Remove active class from all tabs
+    const tabs = document.querySelectorAll('.tab');
+    tabs.forEach(tab => tab.classList.remove('active'));
+    
+    // Show selected tab content
+    document.getElementById(tabName).classList.add('active');
+    
+    // Add active class to clicked tab
+    event.target.classList.add('active');
+}
+
+function testConnection() {
+    const loading = document.getElementById('loading');
+    const error = document.getElementById('error');
+    const success = document.getElementById('success');
+    
+    // Hide previous states
+    error.classList.remove('show');
+    success.classList.remove('show');
+    
+    // Show loading
+    loading.classList.add('show');
+    
+    // Simulate API call
+    setTimeout(() => {
+        loading.classList.remove('show');
+        
+        // Simulate random success/failure for demo
+        if (Math.random() > 0.3) {
+            success.classList.add('show');
+        } else {
+            error.classList.add('show');
+        }
+    }, 3000);
+}
+
+function retryConnection() {
+    testConnection();
+}
+
+function addMapping() {
+    const tableBody = document.getElementById('mappingTableBody');
+    const newRow = tableBody.rows[0].cloneNode(true);
+    
+    // Reset values
+    const selects = newRow.querySelectorAll('select');
+    selects.forEach(select => select.selectedIndex = 0);
+    
+    tableBody.appendChild(newRow);
+}
+
+function removeMapping(button) {
+    const row = button.closest('tr');
+    const tableBody = document.getElementById('mappingTableBody');
+    
+    if (tableBody.rows.length > 1) {
+        row.remove();
+    }
+}
+
+function openFormulaModal() {
+    document.getElementById('formulaModal').classList.add('show');
+    updateFormulaPreview();
+}
+
+function closeFormulaModal() {
+    document.getElementById('formulaModal').classList.remove('show');
+    currentMappingRow = null;
+    
+    // Reset modal to initial state
+    const container = document.getElementById('formulaRows');
+    
+    // Remove all children except the first formula row
+    while (container.children.length > 1) {
+        container.removeChild(container.lastChild);
+    }
+    
+    // Reset first row
+    const firstRow = container.querySelector('.formula-row');
+    firstRow.querySelector('.siterecon-select').selectedIndex = 0;
+    firstRow.querySelector('.multiplier-unit').selectedIndex = 0;
+    firstRow.querySelector('.numeric-value').value = '';
+    
+    // Reset Aspire target
+    document.getElementById('aspireTargetSelect').selectedIndex = 0;
+    
+    updateFormulaPreview();
+}
+
+function addFormulaRow() {
+    const container = document.getElementById('formulaRows');
+    const firstRow = container.querySelector('.formula-row');
+    
+    // Add operator selector between inputs if this isn't the first row
+    if (container.children.length > 0) {
+        const operatorDiv = document.createElement('div');
+        operatorDiv.className = 'operator-between';
+        operatorDiv.innerHTML = `
+            <select class="operator-select" onchange="updateFormulaPreview()">
+                <option value="+">+</option>
+                <option value="-">−</option>
+                <option value="*">×</option>
+                <option value="/">/</option>
+            </select>
+        `;
+        container.appendChild(operatorDiv);
+    }
+    
+    // Create new row
+    const newRow = firstRow.cloneNode(true);
+    
+    // Reset values in new row
+    newRow.querySelector('.siterecon-select').selectedIndex = 0;
+    newRow.querySelector('.multiplier-unit').selectedIndex = 0;
+    newRow.querySelector('.numeric-value').value = '';
+    
+    container.appendChild(newRow);
+    updateFormulaPreview();
+}
+
+function removeFormulaRow(button) {
+    const container = document.getElementById('formulaRows');
+    const rows = container.querySelectorAll('.formula-row');
+    
+    if (rows.length > 1) {
+        const row = button.closest('.formula-row');
+        const rowIndex = Array.from(container.children).indexOf(row);
+        
+        // Remove the row
+        row.remove();
+        
+        // Handle operator removal
+        const operators = container.querySelectorAll('.operator-between');
+        
+        // If removing the first row, remove the first operator (if exists)
+        if (rowIndex === 0 && operators.length > 0) {
+            operators[0].remove();
+        }
+        // If removing any other row, remove the preceding operator
+        else if (rowIndex > 0) {
+            const operatorIndex = Math.floor(rowIndex / 2);
+            if (operators[operatorIndex - 1]) {
+                operators[operatorIndex - 1].remove();
+            }
+        }
+        
+        updateFormulaPreview();
+    }
+}
+
+function updateFormulaPreview() {
+    const aspireTarget = document.getElementById('aspireTargetSelect');
+    const container = document.getElementById('formulaRows');
+    const allElements = container.children;
+    const previewText = document.getElementById('formulaPreviewText');
+    
+    let formula = '';
+    let hasValidItems = false;
+    
+    for (let i = 0; i < allElements.length; i++) {
+        const element = allElements[i];
+        
+        // Handle formula rows
+        if (element.classList.contains('formula-row')) {
+            const siteReconSelect = element.querySelector('.siterecon-select');
+            const multiplierUnit = element.querySelector('.multiplier-unit');
+            const numericValue = element.querySelector('.numeric-value');
+            
+            if (siteReconSelect.value && numericValue.value && multiplierUnit.value) {
+                hasValidItems = true;
+                
+                // Format based on the multiplier type
+                if (multiplierUnit.value === 'percent') {
+                    formula += `${numericValue.value}% of ${siteReconSelect.options[siteReconSelect.selectedIndex].text}`;
+                } else {
+                    const unitSymbol = multiplierUnit.value === '*' ? '×' : multiplierUnit.value === '/' ? '÷' : multiplierUnit.value;
+                    formula += `${numericValue.value} ${unitSymbol} ${siteReconSelect.options[siteReconSelect.selectedIndex].text}`;
+                }
+            }
+        }
+        // Handle operator selectors
+        else if (element.classList.contains('operator-between')) {
+            const operatorSelect = element.querySelector('.operator-select');
+            if (operatorSelect.value) {
+                const operatorSymbol = operatorSelect.value === '*' ? '×' : 
+                                     operatorSelect.value === '/' ? '÷' : 
+                                     operatorSelect.value === '-' ? '−' : 
+                                     operatorSelect.value;
+                
+                formula += ` ${operatorSymbol} `;
+            }
+        }
+    }
+    
+    if (hasValidItems && aspireTarget.value) {
+        const targetText = aspireTarget.options[aspireTarget.selectedIndex].text;
+        previewText.textContent = `This will calculate: ${formula} → ${targetText}`;
+    } else if (hasValidItems) {
+        previewText.textContent = `Formula: ${formula} → (Select Aspire target)`;
+    } else {
+        previewText.textContent = 'Select items and values to see the formula preview';
+    }
+}
+
+function saveFormula() {
+    const aspireTarget = document.getElementById('aspireTargetSelect');
+    if (!aspireTarget.value) {
+        alert('Please select an Aspire CRM target item');
+        return;
+    }
+    
+    const container = document.getElementById('formulaRows');
+    const formulaRows = container.querySelectorAll('.formula-row');
+    let hasValidFormula = false;
+    
+    formulaRows.forEach(row => {
+        const siteReconSelect = row.querySelector('.siterecon-select');
+        const numericValue = row.querySelector('.numeric-value');
+        
+        if (siteReconSelect.value && numericValue.value) {
+            hasValidFormula = true;
+        }
+    });
+    
+    if (!hasValidFormula) {
+        alert('Please add at least one valid formula item');
+        return;
+    }
+    
+    // Create a new row in the mapping table for the formula
+    const tableBody = document.getElementById('mappingTableBody');
+    const newRow = document.createElement('tr');
+    newRow.className = 'mapping-row';
+    
+    // Build formula display text
+    let formulaDisplay = '';
+    const operatorRows = container.querySelectorAll('.operator-row');
+    
+    formulaRows.forEach((row, index) => {
+        const siteReconSelect = row.querySelector('.siterecon-select');
+        const multiplierUnit = row.querySelector('.multiplier-unit');
+        const numericValue = row.querySelector('.numeric-value');
+        
+        if (siteReconSelect.value && numericValue.value) {
+            if (index > 0 && operatorRows[index - 1]) {
+                const operator = operatorRows[index - 1].querySelector('.operator-select').value;
+                const operatorSymbol = operator === '*' ? '×' : operator === '/' ? '÷' : operator === '-' ? '−' : operator;
+                formulaDisplay += ` ${operatorSymbol} `;
+            }
+            
+            const unitSymbol = multiplierUnit.value === 'percent' ? '%' : 
+                             multiplierUnit.value === 'multiply' ? '×' : '÷';
+            
+            formulaDisplay += `${numericValue.value}${unitSymbol} ${siteReconSelect.options[siteReconSelect.selectedIndex].text}`;
+        }
+    });
+    
+    newRow.innerHTML = `
+        <td>
+            <div style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 6px; padding: 8px; font-size: 13px;">
+                <strong>Formula:</strong> ${formulaDisplay}
+            </div>
+        </td>
+        <td>
+            <select>
+                <option value="${aspireTarget.value}" selected>${aspireTarget.options[aspireTarget.selectedIndex].text}</option>
+            </select>
+        </td>
+        <td>
+            <div class="mapping-actions">
+                <button class="btn btn-danger btn-small" onclick="removeMapping(this)">Remove</button>
+            </div>
+        </td>
+    `;
+    
+    tableBody.appendChild(newRow);
+    closeFormulaModal();
+}
+
+// Auto-export toggle handler
+document.getElementById('autoExport').addEventListener('change', function() {
+    if (this.checked) {
+        console.log('Auto-export enabled');
+    } else {
+        console.log('Auto-export disabled');
+    }
+});
+
+function saveAndContinue() {
+    // Save credentials without testing connection
+    alert('Credentials saved successfully!');
+    showTab('mapping');
+}
+
+function saveMapping() {
+    const success = document.getElementById('mappingSuccess');
+    success.classList.add('show');
+    
+    setTimeout(() => {
+        success.classList.remove('show');
+    }, 3000);
+}
+
+function saveExportSettings() {
+    alert('Export settings saved successfully!');
+}
+
+// Form submission handler
+document.getElementById('credentialsForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    testConnection();
+});
+</script>
+</body>
+</html>
